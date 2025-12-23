@@ -65,8 +65,7 @@ def isLoggedIn (ctx : Context) : Bool :=
 
 /-- Find user by email -/
 def findUserByEmail (ctx : Context) (email : String) : Option EntityId :=
-  ctx.db.bind fun conn =>
-    let db := conn.db
+  ctx.database.bind fun db =>
     db.findOneByAttrValue userEmail (.string email)
 
 /-- Find user by ID -/
@@ -77,23 +76,22 @@ def findUserById (ctx : Context) (id : String) : Option EntityId :=
 
 /-- Get all todos for a user -/
 def getUserTodos (ctx : Context) (userId : EntityId) : List EntityId :=
-  match ctx.db with
+  match ctx.database with
   | none => []
-  | some conn =>
-    let db := conn.db
+  | some db =>
     db.findByAttrValue todoOwner (.ref userId)
 
 /-- Get a single attribute value as string -/
 def getAttrString (ctx : Context) (entityId : EntityId) (attr : Attribute) : Option String :=
-  ctx.db.bind fun conn =>
-    match conn.db.getOne entityId attr with
+  ctx.database.bind fun db =>
+    match db.getOne entityId attr with
     | some (.string s) => some s
     | _ => none
 
 /-- Get a single attribute value as bool -/
 def getAttrBool (ctx : Context) (entityId : EntityId) (attr : Attribute) : Option Bool :=
-  ctx.db.bind fun conn =>
-    match conn.db.getOne entityId attr with
+  ctx.database.bind fun db =>
+    match db.getOne entityId attr with
     | some (.bool b) => some b
     | _ => none
 
@@ -106,8 +104,7 @@ structure TodoData where
 
 /-- Load todo data from entity -/
 def loadTodo (ctx : Context) (todoId : EntityId) : Option TodoData :=
-  ctx.db.bind fun conn =>
-    let db := conn.db
+  ctx.database.bind fun db =>
     let title := match db.getOne todoId todoTitle with
       | some (.string s) => s
       | _ => ""

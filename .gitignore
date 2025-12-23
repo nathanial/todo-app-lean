@@ -12,3 +12,5 @@
 
 # Lake manifest (regenerated on build)
 lake-manifest.json
+
+data/
